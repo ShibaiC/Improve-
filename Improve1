@@ -1,0 +1,71 @@
+# Start chromium with chromium --remote-debugging-port=9230 
+# Login on your chromium to chatgpt and navigate to gpt4 (with visual feature)
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+
+
+import time
+# Set up the webdriver with options
+options = Options()
+#options.add_argument("--remote-debugging-port=9230")
+options.add_experimental_option("debuggerAddress", "127.0.0.1:9230")
+driver = webdriver.Chrome(options=options)
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+
+def send_form_with_image(driver, image_path):
+    # Navigate to the page URL (replace with your actual URL)
+    print("Bot : Refreshing Page (25s)")
+    driver.back()
+    time.sleep(5)  # wait for the previous page to load
+    driver.forward()
+    time.sleep(20)
+    # 1. Find the textarea and input a message.
+    print("Bot : Writing prompt (1s)")
+    textarea = driver.find_element(By.ID, "prompt-textarea")
+    textarea.send_keys("Your text here!")
+    time.sleep(1)
+
+    print("Bot : Inserting Image (20s)")
+    file_input = driver.find_element(By.CSS_SELECTOR, "input[type='file']")
+    file_input.send_keys(image_path)
+    time.sleep(10)
+
+    # 3. Find the send button and click it to submit the form.
+    print("Bot : Submitting Form (1s)")
+    send_button = driver.find_element(By.CSS_SELECTOR, "button[data-testid='send-button']")
+    send_button.click()
+
+    print("Bot : Waiting for response (200s)")
+    time.sleep(200)
+
+    markdown_divs = driver.find_elements(By.CSS_SELECTOR, "div.markdown")
+
+    latest_paragraphs = []
+
+    for div in markdown_divs:
+        # For each div, get all <p> elements
+        p_elements = div.find_elements(By.TAG_NAME, "p")
+        
+        # Get the last <p> from the list of p_elements
+        if p_elements:
+            latest_paragraphs.append(p_elements[-1])
+
+    latest_markdown_text = "ERRROR"  
+    if latest_paragraphs:
+        last_paragraph = latest_paragraphs[-1]
+        # Do something with last_paragraph, for instance, extract its text
+        latest_markdown_text = last_paragraph.text
+    #latest_markdown_text = latest_paragraphs[-1].text
+
+    print("######### MARKDOWN #########")
+    print(latest_markdown_text) # Or save it to a file or other storage.
+
+
+# Execute the function
+send_form_with_image(driver, "/path/to/img")
+# Close the driver after completing the task
+driver.quit()
